@@ -3,7 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm+all,visualstudiocode,flask
 
 ### Serverless ###
-.serverless
+.serverless/*
 
 ### Flask ###
 instance/*
