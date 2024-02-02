@@ -1,0 +1,78 @@
+# serverless.yml
+
+service: media-service
+
+# Framework version constraint
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  memorySize: 128
+  timeout: 10
+
+plugins:
+  - serverless-python-requirements
+  - serverless-iam-roles-per-function
+
+# MEDIA ROUTES
+functions:
+  trendingMedia:
+    handler: api/functions/media.trending_media
+    events:
+      - httpApi: 'GET /media/trending-media'
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - ssm:GetParameter
+        Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/dev/tmdb_api_key
+
+  popularMovies:
+    handler: api/functions/media.popular_movies
+    events:
+      - httpApi: 'GET /media/popular-movies'
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - ssm:GetParameter
+        Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/dev/tmdb_api_key
+
+  searchMedia:
+    handler: api/functions/media.search
+    events:
+      - httpApi: 'GET /media/search/{query}'
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - ssm:GetParameter
+        Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/dev/tmdb_api_key
+
+  getMedia:
+    handler: api/functions/media.get_media
+    events:
+      - httpApi: 'GET /media'
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - ssm:GetParameter
+        Resource: arn:aws:ssm:${aws:region}:${aws:accountId}:parameter/dev/tmdb_api_key
+
+# REVIEW ROUTES
+  Reviews:
+    handler: api/functions/reviews.index_reviews # or index
+    events:
+      - httpApi: 'GET /reviews'
+
+  newReview:
+    handler: api/functions/reviews.new_review # or new
+    events:
+      - httpApi: 'POST /reviews'
+
+  deleteReview:
+    handler: api/functions/reviews.delete_review # or delete
+    events:
+      - httpApi: 'DELETE /reviews/{review_id}'
+
+# custom:
+#   pythonRequirements:
+#     dockerizePip: non-linux
